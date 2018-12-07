@@ -20,6 +20,7 @@ public class Quote {
         this.text = text;
     }
 
+    //Static method to read in the json file of quotes and return it as an ArrayList of Quote objects
     public static ArrayList<Quote> quoteList() {
         try {
             byte[] text = Files.readAllBytes(Paths.get("assets/recentquotes.json"));
@@ -35,6 +36,7 @@ public class Quote {
         }
     }
 
+    //Static method that will get and return a random Ron Swanson quote
     public static Quote getWebQuote() {
         try {
             URL url = new URL("https://ron-swanson-quotes.herokuapp.com/v2/quotes");
@@ -58,6 +60,7 @@ public class Quote {
         return null;
     }
 
+    //Instance method that will add the quote it is called on to the provided ArrayList of quotes and save that List to the recentquotes.json file
     public void saveQuote(ArrayList<Quote> quotes) {
         Gson gson = new Gson();
         quotes.add(this);

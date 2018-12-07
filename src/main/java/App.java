@@ -1,13 +1,4 @@
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /*
@@ -25,7 +16,5 @@ public class App {
             swansonism.saveQuote(quotes);
             System.out.println(swansonism);
         }
-;
-
     }
 }
