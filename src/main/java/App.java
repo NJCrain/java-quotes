@@ -1,8 +1,4 @@
-import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /*
@@ -11,23 +7,14 @@ import java.util.concurrent.ThreadLocalRandom;
 public class App {
 
     public static void main(String[] args) {
-        Quote[] quotes = quoteArr();
-        int random = ThreadLocalRandom.current().nextInt(quotes.length);
-        System.out.println(quotes[random]);
-
-    }
-
-    public static Quote[] quoteArr () {
-        try {
-            byte[] text = Files.readAllBytes(Paths.get("assets/recentquotes.json"));
-            Gson gson = new Gson();
-            Quote[] quotes = gson.fromJson(new String(text), Quote[].class);
-            return quotes;
-
-        }
-        catch (IOException e) {
-            System.err.println(e);
-            return null;
+        Quote swansonism = Quote.getWebQuote();
+        ArrayList<Quote> quotes = Quote.quoteList();
+        if (swansonism == null) {
+            int random = ThreadLocalRandom.current().nextInt(quotes.size());
+            System.out.println(quotes.get(random));
+        } else {
+            swansonism.saveQuote(quotes);
+            System.out.println(swansonism);
         }
     }
 }
