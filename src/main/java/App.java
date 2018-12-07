@@ -16,68 +16,16 @@ import java.util.concurrent.ThreadLocalRandom;
 public class App {
 
     public static void main(String[] args) {
-        Quote swansonism = getWebQuote();
+        Quote swansonism = Quote.getWebQuote();
+        ArrayList<Quote> quotes = Quote.quoteList();
         if (swansonism == null) {
-            ArrayList<Quote> quotes = quoteList();
             int random = ThreadLocalRandom.current().nextInt(quotes.size());
             System.out.println(quotes.get(random));
         } else {
+            swansonism.saveQuote(quotes);
             System.out.println(swansonism);
         }
 ;
 
-    }
-
-    public static ArrayList<Quote> quoteList() {
-        try {
-            byte[] text = Files.readAllBytes(Paths.get("assets/recentquotes.json"));
-            Gson gson = new Gson();
-            ArrayList<Quote> quotes = gson.fromJson(new String(text), new TypeToken<ArrayList<Quote>>(){}.getType());
-            return quotes;
-
-        }
-        catch (IOException e) {
-            System.err.println(e);
-            return null;
-        }
-    }
-
-    public static Quote getWebQuote() {
-        try {
-            URL url = new URL("https://ron-swanson-quotes.herokuapp.com/v2/quotes");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-
-            //Used from the example found at https://www.baeldung.com/java-http-request
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuffer content = new StringBuffer();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-            Quote quote = new Quote("Ron Swanson", content.deleteCharAt(0).deleteCharAt(content.length() -1 ).toString());
-            saveQuote(quote);
-            in.close();
-            return quote;
-        }
-        catch (IOException e) {
-            System.out.println("Couldn't connect to the internet, getting a local quote instead");
-        }
-        return null;
-    }
-
-    public static void saveQuote(Quote toSave) {
-        Gson gson = new Gson();
-        ArrayList<Quote> quotes = quoteList();
-        quotes.add(toSave);
-        try {
-            System.out.println("Saving the quote");
-            FileWriter jsonQuotes = new FileWriter("assets/recentquotes.json");
-            jsonQuotes.write(gson.toJson(quotes));
-            jsonQuotes.close();
-        } catch (IOException e) {
-            System.out.println("Something went wrong while trying to save the quote");
-            System.err.println(e);
-        }
     }
 }
