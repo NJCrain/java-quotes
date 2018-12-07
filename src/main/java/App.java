@@ -1,3 +1,4 @@
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import java.io.*;
@@ -5,6 +6,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /*
@@ -15,9 +18,9 @@ public class App {
     public static void main(String[] args) {
         Quote swansonism = getWebQuote();
         if (swansonism == null) {
-            Quote[] quotes = quoteArr();
-            int random = ThreadLocalRandom.current().nextInt(quotes.length);
-            System.out.println(quotes[random]);
+            ArrayList<Quote> quotes = quoteList();
+            int random = ThreadLocalRandom.current().nextInt(quotes.size());
+            System.out.println(quotes.get(random));
         } else {
             System.out.println(swansonism);
         }
@@ -25,11 +28,11 @@ public class App {
 
     }
 
-    public static Quote[] quoteArr() {
+    public static ArrayList<Quote> quoteList() {
         try {
             byte[] text = Files.readAllBytes(Paths.get("assets/recentquotes.json"));
             Gson gson = new Gson();
-            Quote[] quotes = gson.fromJson(new String(text), Quote[].class);
+            ArrayList<Quote> quotes = gson.fromJson(new String(text), new TypeToken<ArrayList<Quote>>(){}.getType());
             return quotes;
 
         }
@@ -65,10 +68,12 @@ public class App {
 
     public static void saveQuote(Quote toSave) {
         Gson gson = new Gson();
+        ArrayList<Quote> quotes = quoteList();
+        quotes.add(toSave);
         try {
             System.out.println("Saving the quote");
-            FileWriter jsonQuotes = new FileWriter("assets/swansonquotes.json", true);
-            jsonQuotes.write("," + gson.toJson(toSave) + "\n]");
+            FileWriter jsonQuotes = new FileWriter("assets/recentquotes.json");
+            jsonQuotes.write(gson.toJson(quotes));
             jsonQuotes.close();
         } catch (IOException e) {
             System.out.println("Something went wrong while trying to save the quote");
