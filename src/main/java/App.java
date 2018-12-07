@@ -1,6 +1,10 @@
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,13 +15,19 @@ import java.util.concurrent.ThreadLocalRandom;
 public class App {
 
     public static void main(String[] args) {
-        Quote[] quotes = quoteArr();
-        int random = ThreadLocalRandom.current().nextInt(quotes.length);
-        System.out.println(quotes[random]);
+        Quote swansonism = getWebQuote();
+        if (swansonism == null) {
+            Quote[] quotes = quoteArr();
+            int random = ThreadLocalRandom.current().nextInt(quotes.length);
+            System.out.println(quotes[random]);
+        } else {
+            System.out.println(swansonism);
+        }
+;
 
     }
 
-    public static Quote[] quoteArr () {
+    public static Quote[] quoteArr() {
         try {
             byte[] text = Files.readAllBytes(Paths.get("assets/recentquotes.json"));
             Gson gson = new Gson();
@@ -29,5 +39,28 @@ public class App {
             System.err.println(e);
             return null;
         }
+    }
+
+    public static Quote getWebQuote() {
+        try {
+            URL url = new URL("https://ron-swanson-quotes.herokuapp.com/v2/quotes");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            //Used from the example found at https://www.baeldung.com/java-http-request
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer content = new StringBuffer();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            Quote quote = new Quote("Ron Swanson", content.deleteCharAt(0).deleteCharAt(content.length() -1 ).toString());
+            in.close();
+            return quote;
+        }
+        catch (IOException e) {
+            System.out.println("Couldn't connect to the internet, getting a local quote instead");
+        }
+        return null;
     }
 }
