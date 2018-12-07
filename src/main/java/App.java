@@ -1,8 +1,6 @@
 import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
@@ -55,6 +53,7 @@ public class App {
                 content.append(inputLine);
             }
             Quote quote = new Quote("Ron Swanson", content.deleteCharAt(0).deleteCharAt(content.length() -1 ).toString());
+            saveQuote(quote);
             in.close();
             return quote;
         }
@@ -62,5 +61,18 @@ public class App {
             System.out.println("Couldn't connect to the internet, getting a local quote instead");
         }
         return null;
+    }
+
+    public static void saveQuote(Quote toSave) {
+        Gson gson = new Gson();
+        try {
+            System.out.println("Saving the quote");
+            FileWriter jsonQuotes = new FileWriter("assets/swansonquotes.json", true);
+            jsonQuotes.write("," + gson.toJson(toSave) + "\n]");
+            jsonQuotes.close();
+        } catch (IOException e) {
+            System.out.println("Something went wrong while trying to save the quote");
+            System.err.println(e);
+        }
     }
 }
