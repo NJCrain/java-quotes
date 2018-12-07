@@ -64,13 +64,15 @@ public class Quote {
     public void saveQuote(ArrayList<Quote> quotes) {
         Gson gson = new Gson();
         quotes.add(this);
-        try {
-            FileWriter jsonQuotes = new FileWriter("assets/recentquotes.json");
-            jsonQuotes.write(gson.toJson(quotes));
-            jsonQuotes.close();
-        } catch (IOException e) {
-            System.out.println("Something went wrong while trying to save the quote");
-            System.err.println(e);
+        if (!quotes.contains(this)) {
+            try {
+                FileWriter jsonQuotes = new FileWriter("assets/recentquotes.json");
+                jsonQuotes.write(gson.toJson(quotes));
+                jsonQuotes.close();
+            } catch (IOException e) {
+                System.out.println("Something went wrong while trying to save the quote");
+                System.err.println(e);
+            }
         }
     }
 
